@@ -64,6 +64,9 @@ export interface Insights {
   language: Lang;
   moon: MoonDay;
   mood: string;
+  dayEnergy: string;
+  reading: string[];
+  observance: { title: string; note: string } | null;
   moonSign: ZodiacSign | null;
   sunSign: ZodiacSign | null;
   biorhythm: { physical: number; emotional: number; intellectual: number } | null;

@@ -90,6 +90,9 @@ export function TodayView({ insights, lang, profile }: Props) {
           <span className="gradient-text animate-sheen">{PHASE_NAME[lang][moon.phaseKey]}</span>
         </h1>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink/75">{insights.mood}</p>
+        <p className="mx-auto mt-2 max-w-md text-xs italic leading-relaxed text-muted">
+          {insights.dayEnergy}
+        </p>
 
         <div className="mt-5 flex items-center justify-center gap-2">
           <button onClick={onShare} disabled={busy} className="btn-primary flex-1 max-w-[220px]">
@@ -139,6 +142,23 @@ export function TodayView({ insights, lang, profile }: Props) {
         </div>
       </section>
 
+      {/* Buddhist precept / observance day */}
+      {insights.observance && (
+        <section className="animate-fadeup rounded-[24px] border border-gold/40 bg-gold/10 p-5">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">🪷</span>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-[0.16em] text-gold">
+                {insights.observance.title}
+              </div>
+              <p className={`mt-1 text-sm leading-relaxed text-ink/85 ${lang === 'km' ? 'font-khmer' : ''}`}>
+                {insights.observance.note}
+              </p>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Stats */}
       <section className="grid grid-cols-3 gap-3">
         <Stat label={t('illumination')} value={`${moon.illumination}%`} />
@@ -187,6 +207,27 @@ export function TodayView({ insights, lang, profile }: Props) {
             <Bio label={t('physical')} value={insights.biorhythm.physical} color="#7ee0b0" />
             <Bio label={t('emotional')} value={insights.biorhythm.emotional} color="#ff5ec7" />
             <Bio label={t('intellectual')} value={insights.biorhythm.intellectual} color="#7b5cff" />
+          </div>
+        </section>
+      )}
+
+      {/* Today's reading (composed from moon sign, biorhythm, etc.) */}
+      {insights.reading.length > 0 && (
+        <section className="glass rounded-[24px] p-6">
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-muted">
+            {t('reading')}
+          </h2>
+          <div className="space-y-2.5">
+            {insights.reading.map((line, i) => (
+              <p
+                key={i}
+                className="flex gap-2 text-sm leading-relaxed text-ink/85 animate-fadeup"
+                style={{ animationDelay: `${i * 60}ms` }}
+              >
+                <span className="text-aurora-violet">✦</span>
+                {line}
+              </p>
+            ))}
           </div>
         </section>
       )}

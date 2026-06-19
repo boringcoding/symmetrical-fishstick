@@ -67,6 +67,8 @@ const en: Dict = {
   syncHint: 'Sign in to keep your calendar across devices.',
   makeYours: 'Make your own ✨',
   sharedTitle: 'A moment under the moon',
+  reading: "Today's reading",
+  observanceDay: 'Observance',
 };
 
 const km: Dict = {
@@ -130,6 +132,8 @@ const km: Dict = {
   syncHint: 'ចូលគណនី ដើម្បីរក្សាប្រតិទិនរបស់អ្នកគ្រប់ឧបករណ៍។',
   makeYours: 'បង្កើតរបស់អ្នក ✨',
   sharedTitle: 'មួយ​ភ្លែត​ក្រោម​ពន្លឺ​ច័ន្ទ',
+  reading: 'ការអានថ្ងៃនេះ',
+  observanceDay: 'ថ្ងៃសីល',
 };
 
 const dicts: Record<Lang, Dict> = { en, km };
