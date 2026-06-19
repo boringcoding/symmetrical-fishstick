@@ -1,0 +1,18 @@
+{
+  "name": "lunar-calendar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personalized lunar calendar — React + NestJS + Postgres (Neon), deployable on Render",
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/api & npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/web",
+    "start:api": "npm run start:prod --workspace=apps/api"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

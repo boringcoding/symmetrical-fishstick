@@ -1,0 +1,44 @@
+# Render Blueprint for the Luna lunar calendar.
+# Postgres is hosted externally on Neon — set DATABASE_URL as a secret (not in git).
+#
+# Deploy: in the Render dashboard → New → Blueprint → connect this repo,
+# then set the DATABASE_URL secret on the `lunar-api` service.
+services:
+  # ---- NestJS API ----
+  - type: web
+    name: lunar-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm install && npm run build --workspace=apps/api
+    startCommand: npm run start:prod --workspace=apps/api
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: DATABASE_URL
+        sync: false # set this secret in the dashboard (Neon connection string)
+      - key: CORS_ORIGIN
+        fromService:
+          type: web
+          name: lunar-web
+          property: host
+
+  # ---- React static site ----
+  - type: web
+    name: lunar-web
+    runtime: static
+    buildCommand: npm install && npm run build --workspace=apps/web
+    staticPublishPath: apps/web/dist
+    autoDeploy: true
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: lunar-api
+          property: host
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

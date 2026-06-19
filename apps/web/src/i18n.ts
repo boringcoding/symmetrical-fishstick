@@ -1,0 +1,159 @@
+import type { Lang, PhaseKey, Category } from './types';
+
+type Dict = Record<string, string>;
+
+const en: Dict = {
+  appName: 'Luna',
+  tagline: 'Your personal lunar calendar',
+  // onboarding
+  welcome: 'Welcome to Luna',
+  onboardIntro: 'A few details and the sky becomes yours.',
+  yourName: 'Your name',
+  namePlaceholder: 'e.g. Sophea',
+  birthDate: 'Date of birth',
+  birthHint: 'Used for your zodiac sign and biorhythms.',
+  city: 'Your city',
+  useLocation: 'Use my location',
+  interests: 'What matters to you?',
+  interestsHint: 'We tailor daily guidance to these.',
+  language: 'Language',
+  begin: 'Enter the calendar',
+  skip: 'Skip',
+  required: 'Please enter your name.',
+  // nav
+  today: 'Today',
+  calendar: 'Calendar',
+  profile: 'Profile',
+  // today
+  moonToday: 'The Moon today',
+  illumination: 'Illumination',
+  lunarDay: 'Lunar day',
+  moonrise: 'Moonrise',
+  moonset: 'Moonset',
+  moonSign: 'Moon in',
+  sunSign: 'Your sign',
+  biorhythms: 'Your biorhythms',
+  physical: 'Physical',
+  emotional: 'Emotional',
+  intellectual: 'Intellectual',
+  guidance: 'Guidance for today',
+  khmerDay: 'Khmer lunar day',
+  koeut: 'waxing (កើត)',
+  roach: 'waning (រោច)',
+  // calendar
+  prev: 'Previous',
+  next: 'Next',
+  loading: 'Reading the sky…',
+  edit: 'Edit profile',
+  save: 'Save',
+  signOut: 'Start over',
+  element: 'Element',
+  fire: 'Fire',
+  earth: 'Earth',
+  air: 'Air',
+  water: 'Water',
+  noBirth: 'Add your birth date in your profile to unlock your sign and biorhythms.',
+};
+
+const km: Dict = {
+  appName: 'Luna',
+  tagline: 'ប្រតិទិនច័ន្ទផ្ទាល់ខ្លួនរបស់អ្នក',
+  welcome: 'សូមស្វាគមន៍មកកាន់ Luna',
+  onboardIntro: 'បំពេញព័ត៌មានបន្តិច រួចមេឃក្លាយជារបស់អ្នក។',
+  yourName: 'ឈ្មោះរបស់អ្នក',
+  namePlaceholder: 'ឧ. សុភា',
+  birthDate: 'ថ្ងៃខែឆ្នាំកំណើត',
+  birthHint: 'ប្រើសម្រាប់រាសីចក្រ និងជីវចង្វាក់របស់អ្នក។',
+  city: 'ទីក្រុងរបស់អ្នក',
+  useLocation: 'ប្រើទីតាំងរបស់ខ្ញុំ',
+  interests: 'អ្វីដែលសំខាន់សម្រាប់អ្នក?',
+  interestsHint: 'យើងរៀបចំការណែនាំប្រចាំថ្ងៃតាមនេះ។',
+  language: 'ភាសា',
+  begin: 'ចូលប្រតិទិន',
+  skip: 'រំលង',
+  required: 'សូមបញ្ចូលឈ្មោះរបស់អ្នក។',
+  today: 'ថ្ងៃនេះ',
+  calendar: 'ប្រតិទិន',
+  profile: 'ប្រវត្តិរូប',
+  moonToday: 'ព្រះច័ន្ទថ្ងៃនេះ',
+  illumination: 'ពន្លឺ',
+  lunarDay: 'ថ្ងៃច័ន្ទ',
+  moonrise: 'ច័ន្ទរះ',
+  moonset: 'ច័ន្ទលិច',
+  moonSign: 'ច័ន្ទនៅ',
+  sunSign: 'រាសីរបស់អ្នក',
+  biorhythms: 'ជីវចង្វាក់របស់អ្នក',
+  physical: 'រាងកាយ',
+  emotional: 'អារម្មណ៍',
+  intellectual: 'បញ្ញា',
+  guidance: 'ការណែនាំសម្រាប់ថ្ងៃនេះ',
+  khmerDay: 'ថ្ងៃខែច័ន្ទតាមខ្មែរ',
+  koeut: 'កើត',
+  roach: 'រោច',
+  prev: 'មុន',
+  next: 'បន្ទាប់',
+  loading: 'កំពុងអានមេឃ…',
+  edit: 'កែប្រវត្តិរូប',
+  save: 'រក្សាទុក',
+  signOut: 'ចាប់ផ្ដើមឡើងវិញ',
+  element: 'ធាតុ',
+  fire: 'ភ្លើង',
+  earth: 'ដី',
+  air: 'ខ្យល់',
+  water: 'ទឹក',
+  noBirth: 'បន្ថែមថ្ងៃកំណើតក្នុងប្រវត្តិរូប ដើម្បីដោះសោររាសី និងជីវចង្វាក់។',
+};
+
+const dicts: Record<Lang, Dict> = { en, km };
+
+export const PHASE_NAME: Record<Lang, Record<PhaseKey, string>> = {
+  en: {
+    new: 'New Moon',
+    waxingCrescent: 'Waxing Crescent',
+    firstQuarter: 'First Quarter',
+    waxingGibbous: 'Waxing Gibbous',
+    full: 'Full Moon',
+    waningGibbous: 'Waning Gibbous',
+    lastQuarter: 'Last Quarter',
+    waningCrescent: 'Waning Crescent',
+  },
+  km: {
+    new: 'ខែដាច់',
+    waxingCrescent: 'ច័ន្ទរះស្គម',
+    firstQuarter: 'កន្លះខែកើត',
+    waxingGibbous: 'ច័ន្ទកើតធំ',
+    full: 'ខែពេញបូរមី',
+    waningGibbous: 'ច័ន្ទរោចធំ',
+    lastQuarter: 'កន្លះខែរោច',
+    waningCrescent: 'ច័ន្ទរោចស្គម',
+  },
+};
+
+export const CATEGORY_LABEL: Record<Lang, Record<Category, string>> = {
+  en: {
+    haircut: 'Hair & beauty',
+    garden: 'Garden & plants',
+    health: 'Health & body',
+    finance: 'Money & work',
+    love: 'Love & bonds',
+  },
+  km: {
+    haircut: 'សក់ និងសម្ផស្ស',
+    garden: 'សួនច្បារ និងរុក្ខជាតិ',
+    health: 'សុខភាព និងរាងកាយ',
+    finance: 'ប្រាក់ និងការងារ',
+    love: 'ស្នេហា និងទំនាក់ទំនង',
+  },
+};
+
+export const CATEGORY_ICON: Record<Category, string> = {
+  haircut: '✂️',
+  garden: '🌱',
+  health: '🧘',
+  finance: '💰',
+  love: '💗',
+};
+
+export function makeT(lang: Lang) {
+  return (key: string): string => dicts[lang][key] ?? dicts.en[key] ?? key;
+}
