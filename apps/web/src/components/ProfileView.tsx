@@ -3,6 +3,7 @@ import type { Category, Lang, Profile } from '../types';
 import { api } from '../api';
 import { CITIES } from '../cities';
 import { CATEGORY_ICON, CATEGORY_LABEL, makeT } from '../i18n';
+import { DateWheel, formatHumanDate } from './DateWheel';
 
 const CATEGORIES: Category[] = ['haircut', 'garden', 'health', 'finance', 'love'];
 
@@ -17,6 +18,7 @@ export function ProfileView({ profile, lang, onSaved, onSignOut }: Props) {
   const t = makeT(lang);
   const [name, setName] = useState(profile.name);
   const [birthDate, setBirthDate] = useState(profile.birthDate ?? '');
+  const [pickDate, setPickDate] = useState(false);
   const matchedCity = CITIES.findIndex((c) => c.name === profile.city);
   const [cityIdx, setCityIdx] = useState(matchedCity >= 0 ? matchedCity : 0);
   const [cats, setCats] = useState<Category[]>((profile.categories as Category[]) ?? []);
@@ -46,40 +48,49 @@ export function ProfileView({ profile, lang, onSaved, onSignOut }: Props) {
   };
 
   return (
-    <div className="space-y-5 pb-24">
-      <div className="glass rounded-3xl p-6">
-        <h2 className="mb-5 font-display text-2xl text-moon-glow">{t('edit')}</h2>
+    <div className="space-y-4 pb-28">
+      <div className="glass rounded-[24px] p-6">
+        <h2 className="mb-5 text-sm font-semibold uppercase tracking-[0.16em] text-muted">
+          {t('edit')}
+        </h2>
         <div className="space-y-5">
           <label className="block">
-            <div className="mb-1.5 text-sm font-medium text-white/80">{t('yourName')}</div>
+            <div className="mb-2 text-sm font-medium text-ink/80">{t('yourName')}</div>
             <input value={name} onChange={(e) => setName(e.target.value)} className="input" />
           </label>
+
           <label className="block">
-            <div className="mb-1.5 text-sm font-medium text-white/80">{t('birthDate')}</div>
-            <input
-              type="date"
-              value={birthDate}
-              max={new Date().toISOString().slice(0, 10)}
-              onChange={(e) => setBirthDate(e.target.value)}
-              className="input"
-            />
+            <div className="mb-2 text-sm font-medium text-ink/80">{t('birthDate')}</div>
+            <button type="button" onClick={() => setPickDate(true)} className="field-btn">
+              <span className={birthDate ? 'text-ink' : 'text-muted/70'}>
+                {birthDate ? formatHumanDate(birthDate, lang) : t('pickDate')}
+              </span>
+              <span className="text-lg">🗓️</span>
+            </button>
           </label>
+
           <label className="block">
-            <div className="mb-1.5 text-sm font-medium text-white/80">{t('city')}</div>
-            <select
-              value={cityIdx}
-              onChange={(e) => setCityIdx(Number(e.target.value))}
-              className="input"
-            >
-              {CITIES.map((c, i) => (
-                <option key={c.name} value={i}>
-                  {lang === 'km' ? `${c.km} · ${c.name}` : c.name}
-                </option>
-              ))}
-            </select>
+            <div className="mb-2 text-sm font-medium text-ink/80">{t('city')}</div>
+            <div className="relative">
+              <select
+                value={cityIdx}
+                onChange={(e) => setCityIdx(Number(e.target.value))}
+                className="input appearance-none pr-10"
+              >
+                {CITIES.map((c, i) => (
+                  <option key={c.name} value={i} className="bg-night-800">
+                    {lang === 'km' ? `${c.km} · ${c.name}` : c.name}
+                  </option>
+                ))}
+              </select>
+              <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted">
+                ▾
+              </span>
+            </div>
           </label>
+
           <div>
-            <div className="mb-1.5 text-sm font-medium text-white/80">{t('interests')}</div>
+            <div className="mb-2 text-sm font-medium text-ink/80">{t('interests')}</div>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((c) => (
                 <button
@@ -105,6 +116,19 @@ export function ProfileView({ profile, lang, onSaved, onSignOut }: Props) {
       >
         {t('signOut')}
       </button>
+
+      <DateWheel
+        open={pickDate}
+        lang={lang}
+        value={birthDate || '1998-01-01'}
+        title={t('birthDate')}
+        confirmLabel={t('save')}
+        onClose={() => setPickDate(false)}
+        onConfirm={(d) => {
+          setBirthDate(d);
+          setPickDate(false);
+        }}
+      />
     </div>
   );
 }

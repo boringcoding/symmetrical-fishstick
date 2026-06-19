@@ -11,6 +11,29 @@ export type PhaseKey =
 export type Lang = 'en' | 'km';
 export type Category = 'haircut' | 'garden' | 'health' | 'finance' | 'love';
 
+export interface KhmerLunar {
+  day: number;
+  moonPhase: number;
+  moonPhaseKm: string;
+  moonPhaseEn: 'waxing' | 'waning';
+  monthIndex: number;
+  monthKm: string;
+  monthEn: string;
+  isLeapMonth: boolean;
+  beYear: number;
+  jsYear: number;
+  animalIndex: number;
+  animalKm: string;
+  animalEn: string;
+  sakKm: string;
+  sakEn: string;
+  weekdayIndex: number;
+  weekdayKm: string;
+  weekdayEn: string;
+  formattedKm: string;
+  formattedEn: string;
+}
+
 export interface MoonDay {
   date: string;
   phaseAngle: number;
@@ -20,6 +43,7 @@ export interface MoonDay {
   age: number;
   lunarDay: number;
   khmer: { day: number; type: 'koeut' | 'roach' };
+  khmerLunar: KhmerLunar;
   moonSignIndex: number;
   moonrise: string | null;
   moonset: string | null;

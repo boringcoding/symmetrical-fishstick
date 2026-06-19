@@ -64,7 +64,7 @@ export function CalendarView({ profile, lang, onSelectDay }: Props) {
           <button onClick={() => shift(-1)} className="btn-ghost" aria-label={t('prev')}>
             ‹
           </button>
-          <h2 className="font-display text-2xl text-moon-glow">{monthLabel}</h2>
+          <h2 className="text-2xl font-bold text-moonglow">{monthLabel}</h2>
           <button onClick={() => shift(1)} className="btn-ghost" aria-label={t('next')}>
             ›
           </button>

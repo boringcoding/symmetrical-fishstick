@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as Astronomy from 'astronomy-engine';
+import { KhmerService, KhmerLunar } from '../khmer/khmer.service';
 
 const DAY_MS = 86_400_000;
 const SYNODIC_MONTH = 29.530588853;
@@ -23,6 +24,7 @@ export interface MoonDay {
   age: number; // days since previous new moon
   lunarDay: number; // 1..30
   khmer: { day: number; type: 'koeut' | 'roach' };
+  khmerLunar: KhmerLunar; // authoritative Chhankitek calendar
   moonSignIndex: number; // 0=Aries .. 11=Pisces (ecliptic longitude of Moon)
   moonrise: string | null; // ISO
   moonset: string | null; // ISO
@@ -30,6 +32,8 @@ export interface MoonDay {
 
 @Injectable()
 export class MoonService {
+  constructor(private readonly khmer: KhmerService) {}
+
   /** Reference instant = local noon of the given calendar date. */
   private noonUtc(year: number, month: number, day: number, tzOffsetMin: number): Date {
     return new Date(Date.UTC(year, month - 1, day, 12, 0, 0) - tzOffsetMin * 60_000);
@@ -139,6 +143,7 @@ export class MoonService {
       age: Math.round(age * 100) / 100,
       lunarDay,
       khmer: { day: khmerDay, type: khmerType },
+      khmerLunar: this.khmer.forDate(year, month, day),
       moonSignIndex,
       moonrise,
       moonset,

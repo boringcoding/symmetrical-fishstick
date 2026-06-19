@@ -98,11 +98,13 @@ export function App() {
       <div className="mx-auto max-w-xl px-4 pt-6">
         {/* Header */}
         <header className="mb-5 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <span className="text-2xl">🌙</span>
             <div>
-              <div className="font-display text-xl leading-none text-moon-glow">{t('appName')}</div>
-              <div className="text-[11px] text-white/45">{t('tagline')}</div>
+              <div className="gradient-text font-sans text-xl font-extrabold leading-none tracking-tight">
+                {t('appName')}
+              </div>
+              <div className="text-[11px] text-muted">{t('tagline')}</div>
             </div>
           </div>
           <LangToggle
@@ -150,7 +152,7 @@ export function App() {
       </div>
 
       {/* Bottom nav */}
-      <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-white/10 bg-night-900/80 backdrop-blur-lg">
+      <nav className="fixed inset-x-0 bottom-0 z-10 border-t border-white/10 bg-night-950/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-xl">
           {(
             [
@@ -165,10 +167,13 @@ export function App() {
                 if (key === 'today') setDate(undefined);
                 setTab(key);
               }}
-              className={`flex flex-1 flex-col items-center gap-0.5 py-3 text-xs transition ${
-                tab === key ? 'text-gold' : 'text-white/55'
+              className={`relative flex flex-1 flex-col items-center gap-0.5 py-3 text-xs font-medium transition ${
+                tab === key ? 'text-ink' : 'text-muted'
               }`}
             >
+              {tab === key && (
+                <span className="absolute top-0 h-0.5 w-10 rounded-full bg-gradient-to-r from-aurora-violet to-aurora-cyan" />
+              )}
               <span className="text-lg">{icon}</span>
               {label}
             </button>

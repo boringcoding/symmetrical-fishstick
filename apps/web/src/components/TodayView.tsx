@@ -1,6 +1,6 @@
 import type { Insights, Lang } from '../types';
 import { CATEGORY_ICON, CATEGORY_LABEL, PHASE_NAME, makeT } from '../i18n';
-import { MoonVisual } from './MoonVisual';
+import { MoonOrb } from './MoonOrb';
 
 interface Props {
   insights: Insights;
@@ -18,44 +18,75 @@ function fmtTime(iso: string | null, lang: Lang): string {
 export function TodayView({ insights, lang }: Props) {
   const t = makeT(lang);
   const { moon } = insights;
+  const kh = moon.khmerLunar;
   const dateLabel = new Date(`${insights.date}T12:00:00Z`).toLocaleDateString(
     lang === 'km' ? 'km-KH' : 'en-US',
     { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
   );
 
   return (
-    <div className="space-y-5 pb-24">
+    <div className="space-y-4 pb-28">
       {/* Hero */}
-      <section className="glass animate-fadeup overflow-hidden rounded-3xl p-7 text-center">
-        <p className="text-sm uppercase tracking-[0.2em] text-gold/80">{insights.greeting}</p>
-        <p className="mt-1 text-xs text-white/50">{dateLabel}</p>
+      <section className="glass animate-fadeup overflow-hidden rounded-[28px] p-6 text-center">
+        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-aurora-cyan">
+          {insights.greeting}
+        </p>
+        <p className="mt-1 text-xs text-muted">{dateLabel}</p>
 
-        <div className="my-6 flex justify-center">
+        <div className="my-3 flex justify-center">
           <div className="animate-float">
-            <MoonVisual illumination={moon.illumination} waxing={moon.waxing} size={210} />
+            <MoonOrb illumination={moon.illumination} waxing={moon.waxing} size={260} />
           </div>
         </div>
 
-        <h1 className="font-display text-4xl font-semibold text-moon-glow">
-          {PHASE_NAME[lang][moon.phaseKey]}
+        <h1 className="font-sans text-[30px] font-extrabold tracking-tight">
+          <span className="gradient-text animate-sheen">{PHASE_NAME[lang][moon.phaseKey]}</span>
         </h1>
-        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-white/70">{insights.mood}</p>
+        <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink/75">{insights.mood}</p>
+      </section>
+
+      {/* Khmer traditional date — the real Chhankitek calendar */}
+      <section className="glass animate-fadeup rounded-[24px] p-5">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+            {t('traditionalDate')}
+          </h2>
+          <span className="text-lg">🌙</span>
+        </div>
+        <p
+          className={`text-lg font-semibold leading-snug text-moonglow ${
+            lang === 'km' ? 'font-khmer' : ''
+          }`}
+        >
+          {lang === 'km' ? kh.formattedKm : kh.formattedEn}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <KhChip
+            main={`${kh.day} ${lang === 'km' ? kh.moonPhaseKm : kh.moonPhaseEn}`}
+            sub={lang === 'km' ? 'ថ្ងៃ' : 'lunar day'}
+            khmer={lang === 'km'}
+          />
+          <KhChip
+            main={lang === 'km' ? kh.monthKm : kh.monthEn}
+            sub={kh.isLeapMonth ? t('leapMonth') : lang === 'km' ? 'ខែ' : 'month'}
+            khmer={lang === 'km'}
+            highlight={kh.isLeapMonth}
+          />
+          <KhChip
+            main={lang === 'km' ? kh.animalKm : kh.animalEn}
+            sub={lang === 'km' ? 'ឆ្នាំ' : 'animal year'}
+            khmer={lang === 'km'}
+          />
+          <KhChip main={lang === 'km' ? kh.sakKm : kh.sakEn} sub={t('era')} khmer={lang === 'km'} />
+          <KhChip main={`${kh.beYear}`} sub={t('buddhistEra')} />
+        </div>
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <section className="grid grid-cols-3 gap-3">
         <Stat label={t('illumination')} value={`${moon.illumination}%`} />
         <Stat label={t('lunarDay')} value={`${moon.lunarDay}`} />
-        <Stat
-          label={t('khmerDay')}
-          value={`${moon.khmer.day} ${t(moon.khmer.type)}`}
-          khmer
-        />
-        <Stat
-          label={moon.waxing ? '↑' : '↓'}
-          value={moon.waxing ? t('koeut') : t('roach')}
-          khmer
-        />
+        <Stat label={t('moonSign')} value={signSymbol(insights)} />
       </section>
 
       {(moon.moonrise || moon.moonset) && (
@@ -85,30 +116,34 @@ export function TodayView({ insights, lang }: Props) {
             elementLabel={t('element')}
           />
         ) : (
-          <div className="glass-soft rounded-2xl p-4 text-sm text-white/50">{t('noBirth')}</div>
+          <div className="glass-soft rounded-2xl p-4 text-sm text-muted">{t('noBirth')}</div>
         )}
       </section>
 
       {/* Biorhythms */}
       {insights.biorhythm && (
-        <section className="glass rounded-3xl p-6">
-          <h2 className="mb-4 font-display text-2xl text-moon-glow">{t('biorhythms')}</h2>
+        <section className="glass rounded-[24px] p-6">
+          <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-muted">
+            {t('biorhythms')}
+          </h2>
           <div className="space-y-4">
             <Bio label={t('physical')} value={insights.biorhythm.physical} color="#7ee0b0" />
-            <Bio label={t('emotional')} value={insights.biorhythm.emotional} color="#e8a0c8" />
-            <Bio label={t('intellectual')} value={insights.biorhythm.intellectual} color="#9bb8f0" />
+            <Bio label={t('emotional')} value={insights.biorhythm.emotional} color="#ff5ec7" />
+            <Bio label={t('intellectual')} value={insights.biorhythm.intellectual} color="#7b5cff" />
           </div>
         </section>
       )}
 
       {/* Guidance */}
-      <section className="glass rounded-3xl p-6">
-        <h2 className="mb-4 font-display text-2xl text-moon-glow">{t('guidance')}</h2>
+      <section className="glass rounded-[24px] p-6">
+        <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-muted">
+          {t('guidance')}
+        </h2>
         <ul className="space-y-3">
           {insights.advice.map((a, i) => (
             <li
               key={i}
-              className="glass-soft flex items-start gap-3 rounded-2xl p-4 animate-fadeup"
+              className="glass-soft flex animate-fadeup items-start gap-3 rounded-2xl p-4"
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <span className="text-xl leading-none">
@@ -116,11 +151,11 @@ export function TodayView({ insights, lang }: Props) {
               </span>
               <div>
                 {a.category !== 'general' && (
-                  <div className="text-xs font-medium uppercase tracking-wide text-gold/80">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-gold/85">
                     {CATEGORY_LABEL[lang][a.category]}
                   </div>
                 )}
-                <p className="text-sm leading-relaxed text-white/85">{a.text}</p>
+                <p className="text-sm leading-relaxed text-ink/85">{a.text}</p>
               </div>
             </li>
           ))}
@@ -130,13 +165,40 @@ export function TodayView({ insights, lang }: Props) {
   );
 }
 
-function Stat({ label, value, khmer }: { label: string; value: string; khmer?: boolean }) {
+function signSymbol(insights: Insights): string {
+  return insights.moonSign?.symbol ?? '—';
+}
+
+function KhChip({
+  main,
+  sub,
+  khmer,
+  highlight,
+}: {
+  main: string;
+  sub: string;
+  khmer?: boolean;
+  highlight?: boolean;
+}) {
   return (
-    <div className="glass-soft rounded-2xl px-4 py-3 text-center">
-      <div className="text-[11px] uppercase tracking-wide text-white/45">{label}</div>
-      <div className={`mt-1 text-lg font-semibold text-moon-glow ${khmer ? 'font-khmer' : ''}`}>
-        {value}
+    <div
+      className={`rounded-2xl border px-3.5 py-2 ${
+        highlight ? 'border-gold/60 bg-gold/10' : 'border-white/10 bg-white/5'
+      }`}
+    >
+      <div className={`text-sm font-semibold text-moonglow ${khmer ? 'font-khmer' : ''}`}>{main}</div>
+      <div className={`text-[10px] uppercase tracking-wide text-muted ${khmer ? 'font-khmer' : ''}`}>
+        {sub}
       </div>
+    </div>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="glass-soft rounded-2xl px-3 py-3 text-center">
+      <div className="text-[11px] uppercase tracking-wide text-muted">{label}</div>
+      <div className="mt-1 text-lg font-bold text-moonglow">{value}</div>
     </div>
   );
 }
@@ -158,9 +220,9 @@ function SignCard({
     <div className="glass flex items-center gap-4 rounded-2xl p-5">
       <div className="text-4xl text-gold">{symbol}</div>
       <div>
-        <div className="text-[11px] uppercase tracking-wide text-white/45">{title}</div>
-        <div className="text-lg font-semibold text-moon-glow">{name}</div>
-        <div className="text-xs text-white/50">
+        <div className="text-[11px] uppercase tracking-wide text-muted">{title}</div>
+        <div className="text-lg font-bold text-moonglow">{name}</div>
+        <div className="text-xs text-muted">
           {elementLabel}: {element}
         </div>
       </div>
@@ -169,13 +231,12 @@ function SignCard({
 }
 
 function Bio({ label, value, color }: { label: string; value: number; color: string }) {
-  // value -100..100 -> 0..100 width with center at 50
   const pct = (value + 100) / 2;
   return (
     <div>
       <div className="mb-1 flex justify-between text-sm">
-        <span className="text-white/70">{label}</span>
-        <span className="font-medium text-white/90">{value > 0 ? `+${value}` : value}%</span>
+        <span className="text-ink/70">{label}</span>
+        <span className="font-semibold text-ink/90">{value > 0 ? `+${value}` : value}%</span>
       </div>
       <div className="relative h-2.5 overflow-hidden rounded-full bg-white/10">
         <div className="absolute left-1/2 top-0 h-full w-px bg-white/25" />
