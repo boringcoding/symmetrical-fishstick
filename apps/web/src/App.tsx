@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Insights, Lang, Profile } from './types';
 import { api } from './api';
 import { store } from './store';
@@ -8,6 +8,7 @@ import { Onboarding, LangToggle } from './components/Onboarding';
 import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
 import { ProfileView } from './components/ProfileView';
+import { ShareView } from './components/ShareView';
 
 type Tab = 'today' | 'calendar' | 'profile';
 
@@ -19,8 +20,19 @@ export function App() {
   const [date, setDate] = useState<string | undefined>(undefined);
   const [insights, setInsights] = useState<Insights | null>(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
+  const pendingToken = useRef<string | null>(null);
 
   const t = makeT(lang);
+
+  // Public share link (?share=YYYY-MM-DD&lat&lng&tz)
+  const shareParams = useMemo(() => {
+    const u = new URLSearchParams(location.search);
+    const d = u.get('share');
+    if (!d) return null;
+    const num = (k: string) => (u.get(k) != null ? Number(u.get(k)) : undefined);
+    return { date: d, lat: num('lat'), lng: num('lng'), tz: num('tz') };
+  }, []);
+  const [showShare, setShowShare] = useState(!!shareParams);
 
   useEffect(() => {
     document.documentElement.lang = lang;
@@ -45,7 +57,7 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch insights whenever profile/date changes and we're on the today tab.
+  // Fetch insights whenever profile/date changes.
   useEffect(() => {
     if (!profile) return;
     setLoadingInsights(true);
@@ -55,10 +67,41 @@ export function App() {
       .finally(() => setLoadingInsights(false));
   }, [profile, date]);
 
-  const onboardDone = (p: Profile) => {
+  const adoptProfile = (p: Profile) => {
     store.setProfileId(p.id);
     setProfile(p);
+    setLang((p.language as Lang) || lang);
     setTab('today');
+  };
+
+  const onboardDone = async (p: Profile) => {
+    adoptProfile(p);
+    // Link the just-created profile to a Google account if the user signed in first.
+    if (pendingToken.current) {
+      try {
+        const r = await api.googleLogin(pendingToken.current, p.id);
+        if (r.profile) setProfile(r.profile);
+      } catch {
+        /* ignore link failure */
+      }
+      pendingToken.current = null;
+    }
+  };
+
+  const handleGoogle = async (idToken: string) => {
+    try {
+      const r = await api.googleLogin(idToken, store.getProfileId() ?? undefined);
+      if (r.profile) {
+        adoptProfile(r.profile);
+        setShowShare(false);
+      } else {
+        // New user — keep the token and let them complete onboarding, then link.
+        pendingToken.current = idToken;
+        setShowShare(false);
+      }
+    } catch {
+      /* ignore */
+    }
   };
 
   const signOut = () => {
@@ -74,9 +117,28 @@ export function App() {
     setTab('today');
   };
 
+  const leaveShare = () => {
+    setShowShare(false);
+    history.replaceState(null, '', location.pathname);
+  };
+
+  if (showShare && shareParams) {
+    return (
+      <ShareView
+        date={shareParams.date}
+        lat={shareParams.lat}
+        lng={shareParams.lng}
+        tz={shareParams.tz}
+        lang={lang}
+        onLang={setLang}
+        onMakeYours={leaveShare}
+      />
+    );
+  }
+
   if (booting) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-white/50">
+      <div className="flex min-h-screen items-center justify-center text-muted">
         <Starfield />
         {t('loading')}
       </div>
@@ -87,7 +149,7 @@ export function App() {
     return (
       <>
         <Starfield />
-        <Onboarding lang={lang} onLang={setLang} onDone={onboardDone} />
+        <Onboarding lang={lang} onLang={setLang} onDone={onboardDone} onGoogle={handleGoogle} />
       </>
     );
   }
@@ -120,18 +182,15 @@ export function App() {
         <main className={lang === 'km' ? 'font-khmer' : ''}>
           {tab === 'today' &&
             (loadingInsights || !insights ? (
-              <div className="py-24 text-center text-white/50">{t('loading')}</div>
+              <div className="py-24 text-center text-muted">{t('loading')}</div>
             ) : (
               <>
                 {date && (
-                  <button
-                    onClick={() => setDate(undefined)}
-                    className="btn-ghost mb-3 text-xs"
-                  >
+                  <button onClick={() => setDate(undefined)} className="btn-ghost mb-3 text-xs">
                     ↩ {t('today')}
                   </button>
                 )}
-                <TodayView insights={insights} lang={lang} />
+                <TodayView insights={insights} lang={lang} profile={profile} />
               </>
             ))}
           {tab === 'calendar' && (
@@ -146,6 +205,7 @@ export function App() {
                 setLang((p.language as Lang) || lang);
               }}
               onSignOut={signOut}
+              onGoogle={handleGoogle}
             />
           )}
         </main>

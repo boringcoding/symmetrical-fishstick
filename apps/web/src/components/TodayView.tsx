@@ -1,10 +1,14 @@
-import type { Insights, Lang } from '../types';
+import { useState } from 'react';
+import type { Insights, Lang, Profile } from '../types';
 import { CATEGORY_ICON, CATEGORY_LABEL, PHASE_NAME, makeT } from '../i18n';
 import { MoonOrb } from './MoonOrb';
+import { buildShareLink, copyLink, shareResult } from '../lib/share';
+import type { ShareCardData } from '../lib/shareImage';
 
 interface Props {
   insights: Insights;
   lang: Lang;
+  profile?: Profile;
 }
 
 function fmtTime(iso: string | null, lang: Lang): string {
@@ -15,14 +19,57 @@ function fmtTime(iso: string | null, lang: Lang): string {
   });
 }
 
-export function TodayView({ insights, lang }: Props) {
+export function TodayView({ insights, lang, profile }: Props) {
   const t = makeT(lang);
   const { moon } = insights;
   const kh = moon.khmerLunar;
+  const [busy, setBusy] = useState(false);
+  const [toast, setToast] = useState('');
   const dateLabel = new Date(`${insights.date}T12:00:00Z`).toLocaleDateString(
     lang === 'km' ? 'km-KH' : 'en-US',
     { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
   );
+
+  const card = (): ShareCardData => ({
+    phaseName: PHASE_NAME[lang][moon.phaseKey],
+    illumination: moon.illumination,
+    waxing: moon.waxing,
+    lunarDay: moon.lunarDay,
+    khmerLine: lang === 'km' ? kh.formattedKm : kh.formattedEn,
+    gregorianLabel: dateLabel,
+    signSymbol: insights.moonSign?.symbol,
+    signName: insights.moonSign ? (lang === 'km' ? insights.moonSign.km : insights.moonSign.en) : '',
+    caption: `${insights.greeting} · ${PHASE_NAME[lang][moon.phaseKey]}`,
+    footer: location.host,
+    lang,
+  });
+
+  const link = () =>
+    buildShareLink({
+      date: insights.date,
+      lat: profile?.latitude,
+      lng: profile?.longitude,
+      tz: profile?.tzOffsetMin,
+    });
+
+  const onShare = async () => {
+    setBusy(true);
+    try {
+      const r = await shareResult(card(), link());
+      if (r === 'downloaded') flash(t('imageSaved'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onCopy = async () => {
+    if (await copyLink(link())) flash(t('linkCopied'));
+  };
+
+  const flash = (m: string) => {
+    setToast(m);
+    setTimeout(() => setToast(''), 2200);
+  };
 
   return (
     <div className="space-y-4 pb-28">
@@ -43,6 +90,16 @@ export function TodayView({ insights, lang }: Props) {
           <span className="gradient-text animate-sheen">{PHASE_NAME[lang][moon.phaseKey]}</span>
         </h1>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-ink/75">{insights.mood}</p>
+
+        <div className="mt-5 flex items-center justify-center gap-2">
+          <button onClick={onShare} disabled={busy} className="btn-primary flex-1 max-w-[220px]">
+            {busy ? '…' : `✨ ${t('share')}`}
+          </button>
+          <button onClick={onCopy} className="btn-ghost" aria-label={t('copyLink')}>
+            🔗
+          </button>
+        </div>
+        {toast && <p className="mt-2 text-xs text-aurora-cyan">{toast}</p>}
       </section>
 
       {/* Khmer traditional date — the real Chhankitek calendar */}

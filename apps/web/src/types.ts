@@ -73,6 +73,9 @@ export interface Insights {
 export interface Profile {
   id: string;
   name: string;
+  email?: string | null;
+  avatarUrl?: string | null;
+  googleSub?: string | null;
   birthDate: string | null;
   city: string | null;
   latitude: number | null;

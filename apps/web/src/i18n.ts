@@ -59,6 +59,14 @@ const en: Dict = {
   air: 'Air',
   water: 'Water',
   noBirth: 'Add your birth date in your profile to unlock your sign and biorhythms.',
+  share: 'Share',
+  copyLink: 'Copy link',
+  linkCopied: 'Link copied ✓',
+  imageSaved: 'Image saved ✓',
+  signedIn: 'Signed in ✓',
+  syncHint: 'Sign in to keep your calendar across devices.',
+  makeYours: 'Make your own ✨',
+  sharedTitle: 'A moment under the moon',
 };
 
 const km: Dict = {
@@ -114,6 +122,14 @@ const km: Dict = {
   air: 'ខ្យល់',
   water: 'ទឹក',
   noBirth: 'បន្ថែមថ្ងៃកំណើតក្នុងប្រវត្តិរូប ដើម្បីដោះសោររាសី និងជីវចង្វាក់។',
+  share: 'ចែករំលែក',
+  copyLink: 'ចម្លងតំណ',
+  linkCopied: 'បានចម្លងតំណ ✓',
+  imageSaved: 'បានរក្សាទុករូបភាព ✓',
+  signedIn: 'បានចូល ✓',
+  syncHint: 'ចូលគណនី ដើម្បីរក្សាប្រតិទិនរបស់អ្នកគ្រប់ឧបករណ៍។',
+  makeYours: 'បង្កើតរបស់អ្នក ✨',
+  sharedTitle: 'មួយ​ភ្លែត​ក្រោម​ពន្លឺ​ច័ន្ទ',
 };
 
 const dicts: Record<Lang, Dict> = { en, km };

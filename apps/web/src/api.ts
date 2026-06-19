@@ -1,5 +1,10 @@
 import type { Insights, MoonDay, Profile } from './types';
 
+export interface GoogleLoginResult {
+  profile: Profile | null;
+  prefill: { name: string | null; email: string | null; avatarUrl: string | null } | null;
+}
+
 // In production the static site is served separately from the API, so the API
 // base URL is injected at build time via VITE_API_URL. In dev we proxy /api.
 // Accept a bare hostname (e.g. Render's fromService host) and add the scheme.
@@ -44,6 +49,20 @@ export const api = {
 
   insights: (profileId: string, date?: string) =>
     http<Insights>(`/api/insights/${profileId}${date ? `?date=${date}` : ''}`),
+
+  googleLogin: (idToken: string, linkProfileId?: string) =>
+    http<GoogleLoginResult>('/api/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ idToken, linkProfileId }),
+    }),
+
+  moonDay: (date: string, lat?: number, lng?: number, tz?: number) => {
+    const params = new URLSearchParams({ date });
+    if (lat != null) params.set('lat', String(lat));
+    if (lng != null) params.set('lng', String(lng));
+    if (tz != null) params.set('tz', String(tz));
+    return http<MoonDay>(`/api/moon/day?${params.toString()}`);
+  },
 
   month: (year: number, month: number, lat?: number, lng?: number, tz?: number) => {
     const params = new URLSearchParams({ year: String(year), month: String(month) });

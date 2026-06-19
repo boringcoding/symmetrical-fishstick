@@ -31,6 +31,21 @@ export class ProfileService {
     return profile;
   }
 
+  async findByGoogleSub(sub: string): Promise<Profile | null> {
+    return this.repo.findOne({ where: { googleSub: sub } });
+  }
+
+  async linkGoogle(
+    id: string,
+    payload: { sub: string; email?: string | null; avatarUrl?: string | null },
+  ): Promise<Profile> {
+    const profile = await this.findOne(id);
+    profile.googleSub = payload.sub;
+    if (payload.email) profile.email = payload.email;
+    if (payload.avatarUrl) profile.avatarUrl = payload.avatarUrl;
+    return this.repo.save(profile);
+  }
+
   async update(id: string, dto: UpdateProfileDto): Promise<Profile> {
     const profile = await this.findOne(id);
     Object.assign(profile, {

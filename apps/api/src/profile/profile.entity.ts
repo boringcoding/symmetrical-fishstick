@@ -14,6 +14,16 @@ export class Profile {
   @Column({ type: 'varchar', length: 120 })
   name: string;
 
+  // Google account linkage (optional — enables cross-device recovery).
+  @Column({ type: 'varchar', length: 64, nullable: true, unique: true })
+  googleSub: string | null;
+
+  @Column({ type: 'varchar', length: 200, nullable: true })
+  email: string | null;
+
+  @Column({ type: 'varchar', length: 400, nullable: true })
+  avatarUrl: string | null;
+
   @Column({ type: 'date', nullable: true })
   birthDate: string | null;
 

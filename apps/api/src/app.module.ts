@@ -5,6 +5,7 @@ import { Profile } from './profile/profile.entity';
 import { ProfileModule } from './profile/profile.module';
 import { MoonModule } from './moon/moon.module';
 import { InsightsModule } from './insights/insights.module';
+import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -27,6 +28,7 @@ import { HealthController } from './health.controller';
     ProfileModule,
     MoonModule,
     InsightsModule,
+    AuthModule,
   ],
   controllers: [HealthController],
 })

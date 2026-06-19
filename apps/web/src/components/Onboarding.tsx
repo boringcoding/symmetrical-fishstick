@@ -5,6 +5,7 @@ import { CITIES } from '../cities';
 import { CATEGORY_ICON, CATEGORY_LABEL, makeT } from '../i18n';
 import { MoonOrb } from './MoonOrb';
 import { DateWheel, formatHumanDate } from './DateWheel';
+import { GoogleSignIn, googleEnabled } from './GoogleSignIn';
 
 const CATEGORIES: Category[] = ['haircut', 'garden', 'health', 'finance', 'love'];
 
@@ -12,9 +13,10 @@ interface Props {
   lang: Lang;
   onLang: (l: Lang) => void;
   onDone: (p: Profile) => void;
+  onGoogle: (idToken: string) => void;
 }
 
-export function Onboarding({ lang, onLang, onDone }: Props) {
+export function Onboarding({ lang, onLang, onDone, onGoogle }: Props) {
   const t = makeT(lang);
   const [name, setName] = useState('');
   const [birthDate, setBirthDate] = useState('');
@@ -77,7 +79,18 @@ export function Onboarding({ lang, onLang, onDone }: Props) {
         </h1>
         <p className="mt-2 text-sm text-muted">{t('onboardIntro')}</p>
 
-        <div className="mt-7 space-y-5">
+        {googleEnabled && (
+          <div className="mt-5">
+            <GoogleSignIn onCredential={onGoogle} />
+            <div className="my-4 flex items-center gap-3 text-xs text-muted/70">
+              <span className="h-px flex-1 bg-white/10" />
+              {lang === 'km' ? 'ឬ' : 'or'}
+              <span className="h-px flex-1 bg-white/10" />
+            </div>
+          </div>
+        )}
+
+        <div className="mt-2 space-y-5">
           <Field label={t('yourName')}>
             <input
               value={name}
