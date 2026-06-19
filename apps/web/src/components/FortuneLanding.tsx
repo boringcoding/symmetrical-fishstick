@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Compatibility, DailyFortune, Lang } from '../types';
-import { api } from '../api';
+import { api, compatShareLink, fortuneShareLink } from '../api';
 import { makeT } from './../i18n';
 import { DateWheel } from './DateWheel';
 import { LangToggle } from './Onboarding';
@@ -81,7 +81,7 @@ export function FortuneLanding({ lang, onLang, onFullCalendar }: Props) {
     await shareImage(blob, {
       filename: 'luna-fortune.png',
       text: lang === 'km' ? 'រាសីខ្ញុំថ្ងៃនេះ 🌙 មកមើលរបស់អ្នក!' : 'My fortune today 🌙 check yours!',
-      link: location.origin,
+      link: fortuneShareLink(fortune, lang),
     });
   };
 
@@ -100,7 +100,7 @@ export function FortuneLanding({ lang, onLang, onFullCalendar }: Props) {
     await shareImage(blob, {
       filename: 'luna-match.png',
       text: lang === 'km' ? 'យើងត្រូវគ្នា ' + compat.score + '% 💞' : `We match ${compat.score}% 💞`,
-      link: location.origin,
+      link: compatShareLink(compat, lang),
     });
   };
 

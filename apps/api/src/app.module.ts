@@ -7,6 +7,7 @@ import { MoonModule } from './moon/moon.module';
 import { InsightsModule } from './insights/insights.module';
 import { AuthModule } from './auth/auth.module';
 import { FortuneModule } from './fortune/fortune.module';
+import { OgModule } from './og/og.module';
 import { HealthController } from './health.controller';
 
 @Module({
@@ -31,6 +32,7 @@ import { HealthController } from './health.controller';
     InsightsModule,
     AuthModule,
     FortuneModule,
+    OgModule,
   ],
   controllers: [HealthController],
 })

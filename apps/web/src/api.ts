@@ -16,6 +16,31 @@ function resolveBase(): string {
 }
 const BASE = resolveBase();
 
+// Share links point at the API's OG pages so they unfurl in social feeds.
+export function fortuneShareLink(f: DailyFortune, lang: string): string {
+  const p = new URLSearchParams({
+    ai: String(f.animalIndex),
+    s: String(f.score),
+    lo: String(f.love),
+    mo: String(f.money),
+    he: String(f.health),
+    num: String(f.luckyNumber),
+    c: f.luckyColor.hex.replace('#', ''),
+    lang,
+  });
+  return `${BASE || location.origin}/api/s/fortune?${p.toString()}`;
+}
+
+export function compatShareLink(c: Compatibility, lang: string): string {
+  const p = new URLSearchParams({
+    a: String(c.a.animalIndex),
+    b: String(c.b.animalIndex),
+    s: String(c.score),
+    lang,
+  });
+  return `${BASE || location.origin}/api/s/compat?${p.toString()}`;
+}
+
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { 'Content-Type': 'application/json' },
