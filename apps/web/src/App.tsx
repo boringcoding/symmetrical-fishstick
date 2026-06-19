@@ -9,12 +9,15 @@ import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
 import { ProfileView } from './components/ProfileView';
 import { ShareView } from './components/ShareView';
+import { FortuneLanding } from './components/FortuneLanding';
 import type { TelegramUser } from './components/TelegramLogin';
 
 type Tab = 'today' | 'calendar' | 'profile';
 
 export function App() {
-  const [lang, setLang] = useState<Lang>((store.getLang() as Lang) || 'en');
+  const [lang, setLang] = useState<Lang>((store.getLang() as Lang) || 'km');
+  const [anonView, setAnonView] = useState<'fortune' | 'onboard'>('fortune');
+  const [prefillBirth, setPrefillBirth] = useState<string>('');
   const [profile, setProfile] = useState<Profile | null>(null);
   const [booting, setBooting] = useState(true);
   const [tab, setTab] = useState<Tab>('today');
@@ -147,11 +150,29 @@ export function App() {
   }
 
   if (!profile) {
+    if (anonView === 'onboard') {
+      return (
+        <>
+          <Starfield />
+          <Onboarding
+            lang={lang}
+            onLang={setLang}
+            onDone={onboardDone}
+            onTelegram={handleTelegram}
+            initialBirth={prefillBirth}
+          />
+        </>
+      );
+    }
     return (
-      <>
-        <Starfield />
-        <Onboarding lang={lang} onLang={setLang} onDone={onboardDone} onTelegram={handleTelegram} />
-      </>
+      <FortuneLanding
+        lang={lang}
+        onLang={setLang}
+        onFullCalendar={(b) => {
+          if (b) setPrefillBirth(b);
+          setAnonView('onboard');
+        }}
+      />
     );
   }
 

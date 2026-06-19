@@ -1,4 +1,4 @@
-import type { Insights, MoonDay, Profile } from './types';
+import type { Compatibility, DailyFortune, Insights, MoonDay, Profile } from './types';
 import type { TelegramUser } from './components/TelegramLogin';
 
 export interface AuthResult {
@@ -56,6 +56,12 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ ...user, linkProfileId }),
     }),
+
+  fortune: (birth: string, date: string, lang: string) =>
+    http<DailyFortune>(`/api/fortune?birth=${birth}&date=${date}&lang=${lang}`),
+
+  compat: (a: string, b: string, lang: string) =>
+    http<Compatibility>(`/api/fortune/compat?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}&lang=${lang}`),
 
   moonDay: (date: string, lat?: number, lng?: number, tz?: number) => {
     const params = new URLSearchParams({ date });

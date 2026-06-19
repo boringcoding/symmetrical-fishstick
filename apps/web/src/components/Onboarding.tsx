@@ -14,12 +14,13 @@ interface Props {
   onLang: (l: Lang) => void;
   onDone: (p: Profile) => void;
   onTelegram: (user: TelegramUser) => void;
+  initialBirth?: string;
 }
 
-export function Onboarding({ lang, onLang, onDone, onTelegram }: Props) {
+export function Onboarding({ lang, onLang, onDone, onTelegram, initialBirth }: Props) {
   const t = makeT(lang);
   const [name, setName] = useState('');
-  const [birthDate, setBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState(initialBirth ?? '');
   const [pickDate, setPickDate] = useState(false);
   const [cityIdx, setCityIdx] = useState(0);
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);

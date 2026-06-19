@@ -26,6 +26,29 @@ export async function shareResult(
   return 'downloaded';
 }
 
+export async function shareImage(
+  blob: Blob,
+  opts: { filename?: string; text?: string; link?: string },
+): Promise<'shared' | 'downloaded'> {
+  const file = new File([blob], opts.filename ?? 'luna.png', { type: 'image/png' });
+  const nav = navigator as any;
+  if (nav.canShare && nav.canShare({ files: [file] })) {
+    try {
+      await nav.share({ files: [file], text: opts.text, url: opts.link });
+    } catch {
+      /* cancelled */
+    }
+    return 'shared';
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = opts.filename ?? 'luna.png';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  return 'downloaded';
+}
+
 export function buildShareLink(opts: {
   date: string;
   lat?: number | null;

@@ -73,6 +73,28 @@ export interface Insights {
   advice: Array<{ category: Category | 'general'; text: string }>;
 }
 
+export interface DailyFortune {
+  date: string;
+  animalIndex: number;
+  animal: { km: string; en: string; emoji: string };
+  animalTrait: string;
+  bornDayTrait: string | null;
+  score: number;
+  love: number;
+  money: number;
+  health: number;
+  luckyNumber: number;
+  luckyColor: { name: string; hex: string };
+  headline: string;
+}
+
+export interface Compatibility {
+  a: { animalIndex: number; km: string; en: string; emoji: string };
+  b: { animalIndex: number; km: string; en: string; emoji: string };
+  score: number;
+  verdict: string;
+}
+
 export interface Profile {
   id: string;
   name: string;
