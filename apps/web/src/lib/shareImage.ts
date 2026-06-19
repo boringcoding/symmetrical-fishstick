@@ -1,3 +1,5 @@
+import { khNum } from './loc';
+
 export interface ShareCardData {
   phaseName: string;
   illumination: number;
@@ -177,9 +179,10 @@ export async function buildShareImage(d: ShareCardData): Promise<Blob> {
 
   // stat pills
   const pillsY = afterKhmer + 110;
+  const kd2 = (v: number | string) => (d.lang === 'km' ? khNum(v) : String(v));
   const pills: [string, string][] = [
-    [`${d.illumination}%`, d.lang === 'km' ? 'ពន្លឺ' : 'illum'],
-    [`${d.lunarDay}`, d.lang === 'km' ? 'ថ្ងៃច័ន្ទ' : 'lunar day'],
+    [`${kd2(d.illumination)}%`, d.lang === 'km' ? 'ពន្លឺ' : 'illum'],
+    [kd2(d.lunarDay), d.lang === 'km' ? 'ថ្ងៃច័ន្ទ' : 'lunar day'],
   ];
   if (d.signSymbol) pills.push([d.signSymbol, d.signName ?? '']);
   const pw = 250;
@@ -285,6 +288,7 @@ export async function buildFortuneImage(d: FortuneCard): Promise<Blob> {
   canvas.height = H;
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   const khF = d.lang === 'km' ? '"Noto Sans Khmer"' : 'Sora';
+  const kd = (v: number | string) => (d.lang === 'km' ? khNum(v) : String(v));
   verticalBase(ctx, W, H);
   ctx.textAlign = 'center';
 
@@ -303,7 +307,7 @@ export async function buildFortuneImage(d: FortuneCard): Promise<Blob> {
   scoreArc(ctx, W / 2, 720, 180, d.score);
   ctx.fillStyle = '#fff';
   ctx.font = '800 150px Sora, sans-serif';
-  ctx.fillText(`${d.score}`, W / 2, 760);
+  ctx.fillText(kd(d.score), W / 2, 760);
   ctx.fillStyle = '#9c98cc';
   ctx.font = `600 40px ${khF}, sans-serif`;
   ctx.fillText('%', W / 2, 830);
@@ -320,7 +324,7 @@ export async function buildFortuneImage(d: FortuneCard): Promise<Blob> {
     const x = 60 + sw * i + sw / 2;
     ctx.fillStyle = '#fff';
     ctx.font = '800 64px Sora, sans-serif';
-    ctx.fillText(`${s.value}`, x, subY + 10);
+    ctx.fillText(kd(s.value), x, subY + 10);
     ctx.fillStyle = '#9c98cc';
     ctx.font = `500 30px ${khF}, sans-serif`;
     ctx.fillText(s.label, x, subY + 56);
@@ -341,7 +345,7 @@ export async function buildFortuneImage(d: FortuneCard): Promise<Blob> {
   ctx.fillText(d.lang === 'km' ? 'ពណ៌សំណាង' : 'Lucky colour', W / 2 + 220, ly + 56);
   ctx.fillStyle = '#f4f0e6';
   ctx.font = '800 70px Sora, sans-serif';
-  ctx.fillText(d.luckyNumber, W / 2 - 220, ly + 120);
+  ctx.fillText(kd(d.luckyNumber), W / 2 - 220, ly + 120);
   ctx.fillStyle = d.luckyColorHex;
   ctx.beginPath();
   ctx.arc(W / 2 + 175, ly + 100, 22, 0, Math.PI * 2);
@@ -401,7 +405,7 @@ export async function buildCompatImage(d: CompatCard): Promise<Blob> {
   scoreArc(ctx, W / 2, 900, 200, d.score);
   ctx.fillStyle = '#fff';
   ctx.font = '800 170px Sora, sans-serif';
-  ctx.fillText(`${d.score}`, W / 2, 950);
+  ctx.fillText(d.lang === 'km' ? khNum(d.score) : `${d.score}`, W / 2, 950);
   ctx.fillStyle = '#9c98cc';
   ctx.font = '600 44px Sora, sans-serif';
   ctx.fillText('%', W / 2, 1030);

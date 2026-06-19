@@ -5,6 +5,7 @@ import { PHASE_NAME, makeT } from '../i18n';
 import { MoonOrb } from './MoonOrb';
 import { Starfield } from './Starfield';
 import { shareResult } from '../lib/share';
+import { fmtDate } from '../lib/loc';
 import type { ShareCardData } from '../lib/shareImage';
 
 interface Props {
@@ -26,10 +27,7 @@ export function ShareView({ date, lat, lng, tz, lang, onMakeYours }: Props) {
     api.moonDay(date, lat, lng, tz).then(setMoon).catch(() => setMoon(null));
   }, [date, lat, lng, tz]);
 
-  const dateLabel = new Date(`${date}T12:00:00Z`).toLocaleDateString(
-    lang === 'km' ? 'km-KH' : 'en-US',
-    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
-  );
+  const dateLabel = fmtDate(date, lang);
 
   const onShare = async () => {
     if (!moon) return;

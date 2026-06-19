@@ -7,6 +7,7 @@ import { LangToggle } from './Onboarding';
 import { Starfield } from './Starfield';
 import { buildCompatImage, buildFortuneImage } from '../lib/shareImage';
 import { shareImage } from '../lib/share';
+import { num } from '../lib/loc';
 
 const BIRTH_KEY = 'luna.birth';
 
@@ -141,7 +142,7 @@ export function FortuneLanding({ lang, onLang, onFullCalendar }: Props) {
               </p>
 
               <div className="my-4 flex justify-center">
-                <ScoreRing score={fortune.score} label={t('luck')} />
+                <ScoreRing score={fortune.score} label={t('luck')} lang={lang} />
               </div>
 
               <p className={`mx-auto max-w-sm text-base font-semibold text-ink ${lang === 'km' ? 'font-khmer' : ''}`}>
@@ -149,15 +150,15 @@ export function FortuneLanding({ lang, onLang, onFullCalendar }: Props) {
               </p>
 
               <div className="mt-5 grid grid-cols-3 gap-2">
-                <Mini label={t('loveScore')} value={fortune.love} icon="❤️" />
-                <Mini label={t('moneyScore')} value={fortune.money} icon="💰" />
-                <Mini label={t('healthScore')} value={fortune.health} icon="🌿" />
+                <Mini label={t('loveScore')} value={fortune.love} icon="❤️" lang={lang} />
+                <Mini label={t('moneyScore')} value={fortune.money} icon="💰" lang={lang} />
+                <Mini label={t('healthScore')} value={fortune.health} icon="🌿" lang={lang} />
               </div>
 
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <div className="glass-soft rounded-2xl px-3 py-3">
                   <div className="text-[11px] uppercase tracking-wide text-muted">{t('luckyNumber')}</div>
-                  <div className="text-2xl font-extrabold text-moonglow">{fortune.luckyNumber}</div>
+                  <div className="text-2xl font-extrabold text-moonglow">{num(fortune.luckyNumber, lang)}</div>
                 </div>
                 <div className="glass-soft flex flex-col items-center justify-center rounded-2xl px-3 py-3">
                   <div className="text-[11px] uppercase tracking-wide text-muted">{t('luckyColor')}</div>
@@ -216,7 +217,7 @@ export function FortuneLanding({ lang, onLang, onFullCalendar }: Props) {
   );
 }
 
-function ScoreRing({ score, label }: { score: number; label: string }) {
+function ScoreRing({ score, label, lang }: { score: number; label: string; lang: Lang }) {
   const r = 76;
   const c = 2 * Math.PI * r;
   return (
@@ -244,18 +245,18 @@ function ScoreRing({ score, label }: { score: number; label: string }) {
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[44px] font-extrabold leading-none text-moonglow">{score}</span>
+        <span className="text-[44px] font-extrabold leading-none text-moonglow">{num(score, lang)}</span>
         <span className="text-[11px] uppercase tracking-wide text-muted">{label}</span>
       </div>
     </div>
   );
 }
 
-function Mini({ label, value, icon }: { label: string; value: number; icon: string }) {
+function Mini({ label, value, icon, lang }: { label: string; value: number; icon: string; lang: Lang }) {
   return (
     <div className="glass-soft rounded-2xl px-2 py-3">
       <div className="text-base">{icon}</div>
-      <div className="text-lg font-extrabold text-moonglow">{value}</div>
+      <div className="text-lg font-extrabold text-moonglow">{num(value, lang)}</div>
       <div className="text-[10px] uppercase tracking-wide text-muted">{label}</div>
     </div>
   );
@@ -287,7 +288,7 @@ function CompatResult({
         <div className="mt-1 text-sm text-muted">
           {lang === 'km' ? compat.a.km : compat.a.en} · {lang === 'km' ? compat.b.km : compat.b.en}
         </div>
-        <div className="my-3 gradient-text text-[72px] font-extrabold leading-none">{compat.score}%</div>
+        <div className="my-3 gradient-text text-[72px] font-extrabold leading-none">{num(compat.score, lang)}%</div>
         <p className={`text-base font-semibold text-ink ${lang === 'km' ? 'font-khmer' : ''}`}>{compat.verdict}</p>
         <div className="mt-6 space-y-2">
           <button onClick={onShare} className="btn-primary w-full">

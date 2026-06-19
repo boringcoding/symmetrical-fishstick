@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { Lang } from '../types';
+import { num } from '../lib/loc';
 
 const ITEM = 40;
 const VISIBLE = 5;
@@ -107,7 +108,7 @@ export function DateWheel({ open, lang, value, title, confirmLabel, onClose, onC
   const year = years[yi] ?? now.getFullYear();
   const month1 = mi + 1;
   const dim = daysInMonth(year, month1);
-  const days = Array.from({ length: dim }, (_, i) => String(i + 1));
+  const days = Array.from({ length: dim }, (_, i) => num(i + 1, lang));
 
   // Clamp the day if the month/year shrinks.
   useEffect(() => {
@@ -145,7 +146,7 @@ export function DateWheel({ open, lang, value, title, confirmLabel, onClose, onC
           <div className="flex gap-1">
             <WheelColumn items={days} index={di} onIndex={setDi} />
             <WheelColumn items={MONTHS[lang]} index={mi} onIndex={setMi} width="flex-[1.4]" />
-            <WheelColumn items={years.map(String)} index={yi} onIndex={setYi} />
+            <WheelColumn items={years.map((y) => num(y, lang))} index={yi} onIndex={setYi} />
           </div>
         </div>
 
@@ -165,5 +166,5 @@ export function DateWheel({ open, lang, value, title, confirmLabel, onClose, onC
 export function formatHumanDate(value: string | null, lang: Lang): string {
   if (!value) return '';
   const [y, m, d] = value.split('-').map(Number);
-  return `${d} ${MONTHS[lang][m - 1]} ${y}`;
+  return `${num(d, lang)} ${MONTHS[lang][m - 1]} ${num(y, lang)}`;
 }

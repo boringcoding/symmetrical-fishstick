@@ -3,6 +3,7 @@ import type { Lang, MoonDay, Profile } from '../types';
 import { api } from '../api';
 import { PHASE_NAME, makeT } from '../i18n';
 import { MoonVisual } from './MoonVisual';
+import { fmtMonth, num } from '../lib/loc';
 
 interface Props {
   profile: Profile;
@@ -52,10 +53,7 @@ export function CalendarView({ profile, lang, onSelectDay }: Props) {
   // Monday-first offset for the 1st of the month.
   const firstDow = (new Date(year, month - 1, 1).getDay() + 6) % 7;
   const todayStr = new Date().toISOString().slice(0, 10);
-  const monthLabel = new Date(year, month - 1, 1).toLocaleDateString(
-    lang === 'km' ? 'km-KH' : 'en-US',
-    { month: 'long', year: 'numeric' },
-  );
+  const monthLabel = fmtMonth(year, month, lang);
 
   return (
     <div className="pb-24">
@@ -95,7 +93,7 @@ export function CalendarView({ profile, lang, onSelectDay }: Props) {
                     isToday ? 'bg-gold/15 ring-1 ring-gold/60' : ''
                   }`}
                 >
-                  <span className="text-[11px] text-white/55">{dayNum}</span>
+                  <span className="text-[11px] text-white/55">{num(dayNum, lang)}</span>
                   <MoonVisual illumination={d.illumination} waxing={d.waxing} size={26} />
                 </button>
               );

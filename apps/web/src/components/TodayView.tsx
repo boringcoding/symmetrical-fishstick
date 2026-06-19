@@ -3,6 +3,7 @@ import type { Insights, Lang, Profile } from '../types';
 import { CATEGORY_ICON, CATEGORY_LABEL, PHASE_NAME, makeT } from '../i18n';
 import { MoonOrb } from './MoonOrb';
 import { buildShareLink, copyLink, shareResult } from '../lib/share';
+import { fmtDate, fmtTime, num } from '../lib/loc';
 import type { ShareCardData } from '../lib/shareImage';
 
 interface Props {
@@ -11,24 +12,13 @@ interface Props {
   profile?: Profile;
 }
 
-function fmtTime(iso: string | null, lang: Lang): string {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleTimeString(lang === 'km' ? 'km-KH' : 'en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
-
 export function TodayView({ insights, lang, profile }: Props) {
   const t = makeT(lang);
   const { moon } = insights;
   const kh = moon.khmerLunar;
   const [busy, setBusy] = useState(false);
   const [toast, setToast] = useState('');
-  const dateLabel = new Date(`${insights.date}T12:00:00Z`).toLocaleDateString(
-    lang === 'km' ? 'km-KH' : 'en-US',
-    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
-  );
+  const dateLabel = fmtDate(insights.date, lang);
 
   const card = (): ShareCardData => ({
     phaseName: PHASE_NAME[lang][moon.phaseKey],
@@ -122,7 +112,7 @@ export function TodayView({ insights, lang, profile }: Props) {
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <KhChip
-            main={`${kh.day} ${lang === 'km' ? kh.moonPhaseKm : kh.moonPhaseEn}`}
+            main={`${num(kh.day, lang)} ${lang === 'km' ? kh.moonPhaseKm : kh.moonPhaseEn}`}
             sub={lang === 'km' ? 'ថ្ងៃ' : 'lunar day'}
             khmer={lang === 'km'}
           />
@@ -138,7 +128,7 @@ export function TodayView({ insights, lang, profile }: Props) {
             khmer={lang === 'km'}
           />
           <KhChip main={lang === 'km' ? kh.sakKm : kh.sakEn} sub={t('era')} khmer={lang === 'km'} />
-          <KhChip main={`${kh.beYear}`} sub={t('buddhistEra')} />
+          <KhChip main={num(kh.beYear, lang)} sub={t('buddhistEra')} khmer={lang === 'km'} />
         </div>
       </section>
 
@@ -161,8 +151,8 @@ export function TodayView({ insights, lang, profile }: Props) {
 
       {/* Stats */}
       <section className="grid grid-cols-3 gap-3">
-        <Stat label={t('illumination')} value={`${moon.illumination}%`} />
-        <Stat label={t('lunarDay')} value={`${moon.lunarDay}`} />
+        <Stat label={t('illumination')} value={`${num(moon.illumination, lang)}%`} />
+        <Stat label={t('lunarDay')} value={num(moon.lunarDay, lang)} />
         <Stat label={t('moonSign')} value={signSymbol(insights)} />
       </section>
 
@@ -170,6 +160,7 @@ export function TodayView({ insights, lang, profile }: Props) {
         <section className="grid grid-cols-2 gap-3">
           <Stat label={t('moonrise')} value={`🌖 ${fmtTime(moon.moonrise, lang)}`} />
           <Stat label={t('moonset')} value={`🌒 ${fmtTime(moon.moonset, lang)}`} />
+          {/* times localized via fmtTime */}
         </section>
       )}
 
@@ -204,9 +195,9 @@ export function TodayView({ insights, lang, profile }: Props) {
             {t('biorhythms')}
           </h2>
           <div className="space-y-4">
-            <Bio label={t('physical')} value={insights.biorhythm.physical} color="#7ee0b0" />
-            <Bio label={t('emotional')} value={insights.biorhythm.emotional} color="#ff5ec7" />
-            <Bio label={t('intellectual')} value={insights.biorhythm.intellectual} color="#7b5cff" />
+            <Bio label={t('physical')} value={insights.biorhythm.physical} color="#7ee0b0" lang={lang} />
+            <Bio label={t('emotional')} value={insights.biorhythm.emotional} color="#ff5ec7" lang={lang} />
+            <Bio label={t('intellectual')} value={insights.biorhythm.intellectual} color="#7b5cff" lang={lang} />
           </div>
         </section>
       )}
@@ -328,13 +319,24 @@ function SignCard({
   );
 }
 
-function Bio({ label, value, color }: { label: string; value: number; color: string }) {
+function Bio({
+  label,
+  value,
+  color,
+  lang,
+}: {
+  label: string;
+  value: number;
+  color: string;
+  lang: Lang;
+}) {
   const pct = (value + 100) / 2;
+  const shown = `${value > 0 ? '+' : value < 0 ? '−' : ''}${num(Math.abs(value), lang)}%`;
   return (
     <div>
       <div className="mb-1 flex justify-between text-sm">
         <span className="text-ink/70">{label}</span>
-        <span className="font-semibold text-ink/90">{value > 0 ? `+${value}` : value}%</span>
+        <span className="font-semibold text-ink/90">{shown}</span>
       </div>
       <div className="relative h-2.5 overflow-hidden rounded-full bg-white/10">
         <div className="absolute left-1/2 top-0 h-full w-px bg-white/25" />

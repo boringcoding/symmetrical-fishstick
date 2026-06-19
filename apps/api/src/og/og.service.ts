@@ -82,7 +82,7 @@ export class OgService {
       <text x="290" y="345" font-size="150" font-weight="800" fill="#ffffff" text-anchor="middle">${p.score}</text>
       <text x="290" y="420" font-size="40" font-weight="700" fill="#9c98cc" text-anchor="middle">%</text>
       <text x="600" y="270" font-size="44" font-weight="700" fill="#e8c987">YEAR OF THE ${animal.toUpperCase()}</text>
-      <text x="600" y="350" font-size="34" font-weight="600" fill="#cfc7e0">LOVE ${p.love}   ·   MONEY ${p.money}   ·   HEALTH ${p.health}</text>
+      <text x="600" y="350" font-size="29" font-weight="600" fill="#cfc7e0">LOVE ${p.love}    ·    MONEY ${p.money}    ·    HEALTH ${p.health}</text>
       <rect x="600" y="400" width="520" height="96" rx="22" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.12)"/>
       <text x="628" y="448" font-size="26" font-weight="600" fill="#9c98cc">LUCKY NUMBER</text>
       <text x="628" y="486" font-size="34" font-weight="800" fill="#f4f0e6">${p.luckyNumber}</text>
