@@ -4,7 +4,7 @@ import { api } from '../api';
 import { CITIES } from '../cities';
 import { CATEGORY_ICON, CATEGORY_LABEL, makeT } from '../i18n';
 import { DateWheel, formatHumanDate } from './DateWheel';
-import { GoogleSignIn, googleEnabled } from './GoogleSignIn';
+import { TelegramLogin, telegramEnabled, type TelegramUser } from './TelegramLogin';
 
 const CATEGORIES: Category[] = ['haircut', 'garden', 'health', 'finance', 'love'];
 
@@ -13,10 +13,10 @@ interface Props {
   lang: Lang;
   onSaved: (p: Profile) => void;
   onSignOut: () => void;
-  onGoogle: (idToken: string) => void;
+  onTelegram: (user: TelegramUser) => void;
 }
 
-export function ProfileView({ profile, lang, onSaved, onSignOut, onGoogle }: Props) {
+export function ProfileView({ profile, lang, onSaved, onSignOut, onTelegram }: Props) {
   const t = makeT(lang);
   const [name, setName] = useState(profile.name);
   const [birthDate, setBirthDate] = useState(profile.birthDate ?? '');
@@ -51,9 +51,9 @@ export function ProfileView({ profile, lang, onSaved, onSignOut, onGoogle }: Pro
 
   return (
     <div className="space-y-4 pb-28">
-      {googleEnabled && (
+      {telegramEnabled && (
         <div className="glass rounded-[24px] p-5">
-          {profile.googleSub ? (
+          {profile.authSub ? (
             <div className="flex items-center gap-3">
               {profile.avatarUrl ? (
                 <img src={profile.avatarUrl} alt="" className="h-10 w-10 rounded-full" />
@@ -62,13 +62,15 @@ export function ProfileView({ profile, lang, onSaved, onSignOut, onGoogle }: Pro
               )}
               <div>
                 <div className="text-sm font-semibold text-moonglow">{t('signedIn')}</div>
-                <div className="text-xs text-muted">{profile.email}</div>
+                <div className="text-xs text-muted">
+                  {profile.username ? `@${profile.username}` : 'Telegram'}
+                </div>
               </div>
             </div>
           ) : (
             <>
               <p className="mb-3 text-sm text-muted">{t('syncHint')}</p>
-              <GoogleSignIn onCredential={onGoogle} text="signin_with" />
+              <TelegramLogin onAuth={onTelegram} />
             </>
           )}
         </div>

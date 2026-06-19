@@ -19,6 +19,11 @@ services:
         value: 20.18.0
       - key: DATABASE_URL
         sync: false # set this secret in the dashboard (Neon connection string)
+      # Telegram login (optional) — sign-in is hidden until these are set.
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false # secret from @BotFather
+      - key: TELEGRAM_BOT_USERNAME
+        sync: false # the bot's @username (without @)
       - key: CORS_ORIGIN
         fromService:
           type: web
@@ -38,6 +43,9 @@ services:
           type: web
           name: lunar-api
           property: host
+      # Telegram bot @username for the login widget (optional).
+      - key: VITE_TELEGRAM_BOT
+        sync: false
     routes:
       - type: rewrite
         source: /*

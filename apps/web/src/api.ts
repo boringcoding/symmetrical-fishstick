@@ -1,8 +1,9 @@
 import type { Insights, MoonDay, Profile } from './types';
+import type { TelegramUser } from './components/TelegramLogin';
 
-export interface GoogleLoginResult {
+export interface AuthResult {
   profile: Profile | null;
-  prefill: { name: string | null; email: string | null; avatarUrl: string | null } | null;
+  prefill: { name: string | null; username: string | null; avatarUrl: string | null } | null;
 }
 
 // In production the static site is served separately from the API, so the API
@@ -50,10 +51,10 @@ export const api = {
   insights: (profileId: string, date?: string) =>
     http<Insights>(`/api/insights/${profileId}${date ? `?date=${date}` : ''}`),
 
-  googleLogin: (idToken: string, linkProfileId?: string) =>
-    http<GoogleLoginResult>('/api/auth/google', {
+  telegramLogin: (user: TelegramUser, linkProfileId?: string) =>
+    http<AuthResult>('/api/auth/telegram', {
       method: 'POST',
-      body: JSON.stringify({ idToken, linkProfileId }),
+      body: JSON.stringify({ ...user, linkProfileId }),
     }),
 
   moonDay: (date: string, lat?: number, lng?: number, tz?: number) => {

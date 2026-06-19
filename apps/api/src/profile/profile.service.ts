@@ -31,17 +31,23 @@ export class ProfileService {
     return profile;
   }
 
-  async findByGoogleSub(sub: string): Promise<Profile | null> {
-    return this.repo.findOne({ where: { googleSub: sub } });
+  async findByAuthSub(sub: string): Promise<Profile | null> {
+    return this.repo.findOne({ where: { authSub: sub } });
   }
 
-  async linkGoogle(
+  async linkAuth(
     id: string,
-    payload: { sub: string; email?: string | null; avatarUrl?: string | null },
+    payload: {
+      sub: string;
+      provider: string;
+      username?: string | null;
+      avatarUrl?: string | null;
+    },
   ): Promise<Profile> {
     const profile = await this.findOne(id);
-    profile.googleSub = payload.sub;
-    if (payload.email) profile.email = payload.email;
+    profile.authSub = payload.sub;
+    profile.authProvider = payload.provider;
+    if (payload.username) profile.username = payload.username;
     if (payload.avatarUrl) profile.avatarUrl = payload.avatarUrl;
     return this.repo.save(profile);
   }

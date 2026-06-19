@@ -9,6 +9,7 @@ import { TodayView } from './components/TodayView';
 import { CalendarView } from './components/CalendarView';
 import { ProfileView } from './components/ProfileView';
 import { ShareView } from './components/ShareView';
+import type { TelegramUser } from './components/TelegramLogin';
 
 type Tab = 'today' | 'calendar' | 'profile';
 
@@ -20,7 +21,7 @@ export function App() {
   const [date, setDate] = useState<string | undefined>(undefined);
   const [insights, setInsights] = useState<Insights | null>(null);
   const [loadingInsights, setLoadingInsights] = useState(false);
-  const pendingToken = useRef<string | null>(null);
+  const pendingUser = useRef<TelegramUser | null>(null);
 
   const t = makeT(lang);
 
@@ -76,27 +77,27 @@ export function App() {
 
   const onboardDone = async (p: Profile) => {
     adoptProfile(p);
-    // Link the just-created profile to a Google account if the user signed in first.
-    if (pendingToken.current) {
+    // Link the just-created profile to the Telegram account if signed in first.
+    if (pendingUser.current) {
       try {
-        const r = await api.googleLogin(pendingToken.current, p.id);
+        const r = await api.telegramLogin(pendingUser.current, p.id);
         if (r.profile) setProfile(r.profile);
       } catch {
         /* ignore link failure */
       }
-      pendingToken.current = null;
+      pendingUser.current = null;
     }
   };
 
-  const handleGoogle = async (idToken: string) => {
+  const handleTelegram = async (user: TelegramUser) => {
     try {
-      const r = await api.googleLogin(idToken, store.getProfileId() ?? undefined);
+      const r = await api.telegramLogin(user, store.getProfileId() ?? undefined);
       if (r.profile) {
         adoptProfile(r.profile);
         setShowShare(false);
       } else {
-        // New user — keep the token and let them complete onboarding, then link.
-        pendingToken.current = idToken;
+        // New user — keep the auth and let them complete onboarding, then link.
+        pendingUser.current = user;
         setShowShare(false);
       }
     } catch {
@@ -149,7 +150,7 @@ export function App() {
     return (
       <>
         <Starfield />
-        <Onboarding lang={lang} onLang={setLang} onDone={onboardDone} onGoogle={handleGoogle} />
+        <Onboarding lang={lang} onLang={setLang} onDone={onboardDone} onTelegram={handleTelegram} />
       </>
     );
   }
@@ -205,7 +206,7 @@ export function App() {
                 setLang((p.language as Lang) || lang);
               }}
               onSignOut={signOut}
-              onGoogle={handleGoogle}
+              onTelegram={handleTelegram}
             />
           )}
         </main>

@@ -14,12 +14,15 @@ export class Profile {
   @Column({ type: 'varchar', length: 120 })
   name: string;
 
-  // Google account linkage (optional — enables cross-device recovery).
+  // External auth linkage (Telegram) — enables cross-device recovery.
   @Column({ type: 'varchar', length: 64, nullable: true, unique: true })
-  googleSub: string | null;
+  authSub: string | null;
 
-  @Column({ type: 'varchar', length: 200, nullable: true })
-  email: string | null;
+  @Column({ type: 'varchar', length: 32, nullable: true })
+  authProvider: string | null;
+
+  @Column({ type: 'varchar', length: 120, nullable: true })
+  username: string | null;
 
   @Column({ type: 'varchar', length: 400, nullable: true })
   avatarUrl: string | null;

@@ -1,13 +1,39 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { IsOptional, IsString } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { AuthService } from './auth.service';
 import { ProfileService } from '../profile/profile.service';
 
-class GoogleLoginDto {
-  @IsString()
-  idToken: string;
+class TelegramLoginDto {
+  @IsNumber()
+  id: number;
 
-  // If the visitor already has an anonymous local profile, link it to the account.
+  @IsOptional()
+  @IsString()
+  first_name?: string;
+
+  @IsOptional()
+  @IsString()
+  last_name?: string;
+
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  photo_url?: string;
+
+  @IsNumber()
+  auth_date: number;
+
+  @IsString()
+  hash: string;
+
+  // If the visitor already has an anonymous local profile, link it.
   @IsOptional()
   @IsString()
   linkProfileId?: string;
@@ -22,33 +48,35 @@ export class AuthController {
 
   @Get('config')
   config() {
-    return { google: this.auth.enabled };
+    return { telegram: this.auth.enabled, bot: this.auth.publicBot };
   }
 
-  @Post('google')
-  async google(@Body() dto: GoogleLoginDto) {
-    const identity = await this.auth.verifyGoogle(dto.idToken);
+  @Post('telegram')
+  async telegram(@Body() dto: TelegramLoginDto) {
+    const { linkProfileId, ...data } = dto;
+    const identity = this.auth.verifyTelegram(data);
 
     // 1. Existing account → return its profile.
-    const existing = await this.profiles.findByGoogleSub(identity.sub);
+    const existing = await this.profiles.findByAuthSub(identity.sub);
     if (existing) {
       return { profile: existing, prefill: null };
     }
 
     // 2. Link an anonymous profile created during this session.
-    if (dto.linkProfileId) {
-      const linked = await this.profiles.linkGoogle(dto.linkProfileId, {
+    if (linkProfileId) {
+      const linked = await this.profiles.linkAuth(linkProfileId, {
         sub: identity.sub,
-        email: identity.email,
-        avatarUrl: identity.picture,
+        provider: identity.provider,
+        username: identity.username,
+        avatarUrl: identity.avatarUrl,
       });
       return { profile: linked, prefill: null };
     }
 
-    // 3. Brand new user → let the client onboard with prefilled details.
+    // 3. New user → onboard with prefilled details.
     return {
       profile: null,
-      prefill: { name: identity.name, email: identity.email, avatarUrl: identity.picture },
+      prefill: { name: identity.name, username: identity.username, avatarUrl: identity.avatarUrl },
     };
   }
 }
