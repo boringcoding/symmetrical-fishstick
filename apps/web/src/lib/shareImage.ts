@@ -1,5 +1,3 @@
-import { khNum } from './loc';
-
 export interface ShareCardData {
   phaseName: string;
   illumination: number;
@@ -179,7 +177,7 @@ export async function buildShareImage(d: ShareCardData): Promise<Blob> {
 
   // stat pills
   const pillsY = afterKhmer + 110;
-  const kd2 = (v: number | string) => (d.lang === 'km' ? khNum(v) : String(v));
+  const kd2 = (v: number | string) => String(v);
   const pills: [string, string][] = [
     [`${kd2(d.illumination)}%`, d.lang === 'km' ? 'ពន្លឺ' : 'illum'],
     [kd2(d.lunarDay), d.lang === 'km' ? 'ថ្ងៃច័ន្ទ' : 'lunar day'],
@@ -288,7 +286,7 @@ export async function buildFortuneImage(d: FortuneCard): Promise<Blob> {
   canvas.height = H;
   const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
   const khF = d.lang === 'km' ? '"Noto Sans Khmer"' : 'Sora';
-  const kd = (v: number | string) => (d.lang === 'km' ? khNum(v) : String(v));
+  const kd = (v: number | string) => String(v);
   verticalBase(ctx, W, H);
   ctx.textAlign = 'center';
 
@@ -405,7 +403,7 @@ export async function buildCompatImage(d: CompatCard): Promise<Blob> {
   scoreArc(ctx, W / 2, 900, 200, d.score);
   ctx.fillStyle = '#fff';
   ctx.font = '800 170px Sora, sans-serif';
-  ctx.fillText(d.lang === 'km' ? khNum(d.score) : `${d.score}`, W / 2, 950);
+  ctx.fillText(`${d.score}`, W / 2, 950);
   ctx.fillStyle = '#9c98cc';
   ctx.font = '600 44px Sora, sans-serif';
   ctx.fillText('%', W / 2, 1030);

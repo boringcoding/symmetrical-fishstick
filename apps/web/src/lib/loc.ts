@@ -7,22 +7,27 @@ const KH_MONTHS = [
 ];
 const KH_WEEK = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
 
-/** Convert Western digits in a value to Khmer numerals. */
+/** Convert Western digits in a value to Khmer numerals (use only for the
+ *  traditional lunar-calendar context — Chhankitek dates). */
 export function khNum(v: number | string): string {
   return String(v).replace(/[0-9]/g, (d) => KH_DIGITS[+d]);
 }
 
-/** Numerals: Khmer when the UI is Khmer, otherwise unchanged. */
-export function num(v: number | string, lang: Lang): string {
-  return lang === 'km' ? khNum(v) : String(v);
+/**
+ * Numerals for modern UI metrics (scores, %, stats, picker, Gregorian dates).
+ * Cambodians use Arabic digits in everyday digital interfaces, so we keep these
+ * Arabic in both languages; Khmer numerals are reserved for the almanac date.
+ */
+export function num(v: number | string, _lang: Lang): string {
+  return String(v);
 }
 
-/** Long date from a YYYY-MM-DD string — guaranteed Khmer (no browser-locale dependency). */
+/** Long date from a YYYY-MM-DD string — Khmer weekday/month words, Arabic day/year. */
 export function fmtDate(ymd: string, lang: Lang): string {
   const [y, m, d] = ymd.split('-').map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d, 12));
   if (lang === 'km') {
-    return `ថ្ងៃ${KH_WEEK[dt.getUTCDay()]} ${khNum(d)} ${KH_MONTHS[m - 1]} ${khNum(y)}`;
+    return `ថ្ងៃ${KH_WEEK[dt.getUTCDay()]} ${d} ${KH_MONTHS[m - 1]} ${y}`;
   }
   return dt.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -34,17 +39,16 @@ export function fmtDate(ymd: string, lang: Lang): string {
 }
 
 export function fmtMonth(year: number, month1: number, lang: Lang): string {
-  if (lang === 'km') return `${KH_MONTHS[month1 - 1]} ${khNum(year)}`;
+  if (lang === 'km') return `${KH_MONTHS[month1 - 1]} ${year}`;
   return new Date(year, month1 - 1, 1).toLocaleDateString('en-US', {
     month: 'long',
     year: 'numeric',
   });
 }
 
-/** Local HH:MM, Khmer numerals when the UI is Khmer. */
-export function fmtTime(iso: string | null, lang: Lang): string {
+/** Local HH:MM (Arabic digits — modern context). */
+export function fmtTime(iso: string | null): string {
   if (!iso) return '—';
   const d = new Date(iso);
-  const s = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  return lang === 'km' ? khNum(s) : s;
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }

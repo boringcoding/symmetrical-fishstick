@@ -3,7 +3,7 @@ import type { Insights, Lang, Profile } from '../types';
 import { CATEGORY_ICON, CATEGORY_LABEL, PHASE_NAME, makeT } from '../i18n';
 import { MoonOrb } from './MoonOrb';
 import { buildShareLink, copyLink, shareResult } from '../lib/share';
-import { fmtDate, fmtTime, num } from '../lib/loc';
+import { fmtDate, fmtTime, khNum, num } from '../lib/loc';
 import type { ShareCardData } from '../lib/shareImage';
 
 interface Props {
@@ -112,7 +112,7 @@ export function TodayView({ insights, lang, profile }: Props) {
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <KhChip
-            main={`${num(kh.day, lang)} ${lang === 'km' ? kh.moonPhaseKm : kh.moonPhaseEn}`}
+            main={`${lang === 'km' ? khNum(kh.day) : kh.day} ${lang === 'km' ? kh.moonPhaseKm : kh.moonPhaseEn}`}
             sub={lang === 'km' ? 'ថ្ងៃ' : 'lunar day'}
             khmer={lang === 'km'}
           />
@@ -128,7 +128,7 @@ export function TodayView({ insights, lang, profile }: Props) {
             khmer={lang === 'km'}
           />
           <KhChip main={lang === 'km' ? kh.sakKm : kh.sakEn} sub={t('era')} khmer={lang === 'km'} />
-          <KhChip main={num(kh.beYear, lang)} sub={t('buddhistEra')} khmer={lang === 'km'} />
+          <KhChip main={lang === 'km' ? khNum(kh.beYear) : String(kh.beYear)} sub={t('buddhistEra')} khmer={lang === 'km'} />
         </div>
       </section>
 
@@ -158,8 +158,8 @@ export function TodayView({ insights, lang, profile }: Props) {
 
       {(moon.moonrise || moon.moonset) && (
         <section className="grid grid-cols-2 gap-3">
-          <Stat label={t('moonrise')} value={`🌖 ${fmtTime(moon.moonrise, lang)}`} />
-          <Stat label={t('moonset')} value={`🌒 ${fmtTime(moon.moonset, lang)}`} />
+          <Stat label={t('moonrise')} value={`🌖 ${fmtTime(moon.moonrise)}`} />
+          <Stat label={t('moonset')} value={`🌒 ${fmtTime(moon.moonset)}`} />
           {/* times localized via fmtTime */}
         </section>
       )}
