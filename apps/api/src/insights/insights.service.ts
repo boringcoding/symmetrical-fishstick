@@ -58,9 +58,9 @@ export class InsightsService {
     return name ? `${hi}, ${name}` : hi;
   }
 
-  async forProfile(profileId: string, dateStr?: string): Promise<Insights> {
+  async forProfile(profileId: string, dateStr?: string, langOverride?: string): Promise<Insights> {
     const profile = await this.profiles.findOne(profileId);
-    const lang = (profile.language === 'km' ? 'km' : 'en') as Lang;
+    const lang = ((langOverride ?? profile.language) === 'km' ? 'km' : 'en') as Lang;
 
     const d = this.parseDate(dateStr);
     const ref = new Date(Date.UTC(d.year, d.month - 1, d.day, 12, 0, 0));

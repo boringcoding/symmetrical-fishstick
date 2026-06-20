@@ -61,15 +61,15 @@ export function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fetch insights whenever profile/date changes.
+  // Fetch insights whenever profile / date / language changes.
   useEffect(() => {
     if (!profile) return;
     setLoadingInsights(true);
     api
-      .insights(profile.id, date)
+      .insights(profile.id, date, lang)
       .then(setInsights)
       .finally(() => setLoadingInsights(false));
-  }, [profile, date]);
+  }, [profile, date, lang]);
 
   const adoptProfile = (p: Profile) => {
     store.setProfileId(p.id);
@@ -195,7 +195,10 @@ export function App() {
             lang={lang}
             onLang={(l) => {
               setLang(l);
-              if (profile) api.updateProfile(profile.id, { language: l }).catch(() => {});
+              if (profile) {
+                setProfile((p) => (p ? { ...p, language: l } : p));
+                api.updateProfile(profile.id, { language: l }).catch(() => {});
+              }
             }}
           />
         </header>

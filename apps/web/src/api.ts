@@ -73,8 +73,13 @@ export const api = {
 
   getProfile: (id: string) => http<Profile>(`/api/profiles/${id}`),
 
-  insights: (profileId: string, date?: string) =>
-    http<Insights>(`/api/insights/${profileId}${date ? `?date=${date}` : ''}`),
+  insights: (profileId: string, date?: string, lang?: string) => {
+    const params = new URLSearchParams();
+    if (date) params.set('date', date);
+    if (lang) params.set('lang', lang);
+    const qs = params.toString();
+    return http<Insights>(`/api/insights/${profileId}${qs ? `?${qs}` : ''}`);
+  },
 
   telegramLogin: (user: TelegramUser, linkProfileId?: string) =>
     http<AuthResult>('/api/auth/telegram', {

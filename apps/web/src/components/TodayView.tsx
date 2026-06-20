@@ -3,7 +3,7 @@ import type { Insights, Lang, Profile } from '../types';
 import { CATEGORY_ICON, CATEGORY_LABEL, PHASE_NAME, makeT } from '../i18n';
 import { MoonOrb } from './MoonOrb';
 import { buildShareLink, copyLink, shareResult } from '../lib/share';
-import { fmtDate, fmtTime, khNum, num } from '../lib/loc';
+import { fmtDate, fmtTime, khNum, num, numPct } from '../lib/loc';
 import type { ShareCardData } from '../lib/shareImage';
 
 interface Props {
@@ -151,7 +151,7 @@ export function TodayView({ insights, lang, profile }: Props) {
 
       {/* Stats */}
       <section className="grid grid-cols-3 gap-3">
-        <Stat label={t('illumination')} value={`${num(moon.illumination, lang)}%`} />
+        <Stat label={t('illumination')} value={numPct(moon.illumination, lang)} />
         <Stat label={t('lunarDay')} value={num(moon.lunarDay, lang)} />
         <Stat label={t('moonSign')} value={signSymbol(insights)} />
       </section>
@@ -331,7 +331,9 @@ function Bio({
   lang: Lang;
 }) {
   const pct = (value + 100) / 2;
-  const shown = `${value > 0 ? '+' : value < 0 ? '−' : ''}${num(Math.abs(value), lang)}%`;
+  const sign = value > 0 ? '+' : value < 0 ? '−' : '';
+  const abs = Math.abs(value);
+  const shown = lang === 'km' ? `${sign}${abs}% (${sign}${khNum(abs)}%)` : `${sign}${abs}%`;
   return (
     <div>
       <div className="mb-1 flex justify-between text-sm">

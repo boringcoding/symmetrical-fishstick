@@ -3,7 +3,7 @@ import type { Lang, MoonDay, Profile } from '../types';
 import { api } from '../api';
 import { PHASE_NAME, makeT } from '../i18n';
 import { MoonVisual } from './MoonVisual';
-import { fmtMonth, num } from '../lib/loc';
+import { fmtMonth } from '../lib/loc';
 
 interface Props {
   profile: Profile;
@@ -93,7 +93,7 @@ export function CalendarView({ profile, lang, onSelectDay }: Props) {
                     isToday ? 'bg-gold/15 ring-1 ring-gold/60' : ''
                   }`}
                 >
-                  <span className="text-[11px] text-white/55">{num(dayNum, lang)}</span>
+                  <span className="text-[11px] text-white/55">{dayNum}</span>
                   <MoonVisual illumination={d.illumination} waxing={d.waxing} size={26} />
                 </button>
               );

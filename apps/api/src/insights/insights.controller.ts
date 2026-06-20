@@ -6,7 +6,11 @@ export class InsightsController {
   constructor(private readonly insights: InsightsService) {}
 
   @Get(':profileId')
-  forProfile(@Param('profileId') profileId: string, @Query('date') date?: string) {
-    return this.insights.forProfile(profileId, date);
+  forProfile(
+    @Param('profileId') profileId: string,
+    @Query('date') date?: string,
+    @Query('lang') lang?: string,
+  ) {
+    return this.insights.forProfile(profileId, date, lang);
   }
 }

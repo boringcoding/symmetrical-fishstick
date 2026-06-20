@@ -7,7 +7,7 @@ import { LangToggle } from './Onboarding';
 import { Starfield } from './Starfield';
 import { buildCompatImage, buildFortuneImage } from '../lib/shareImage';
 import { shareImage } from '../lib/share';
-import { num } from '../lib/loc';
+import { khNum, num } from '../lib/loc';
 
 const BIRTH_KEY = 'luna.birth';
 
@@ -245,8 +245,11 @@ function ScoreRing({ score, label, lang }: { score: number; label: string; lang:
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-[44px] font-extrabold leading-none text-moonglow">{num(score, lang)}</span>
-        <span className="text-[11px] uppercase tracking-wide text-muted">{label}</span>
+        <span className="text-[44px] font-extrabold leading-none text-moonglow">{score}</span>
+        {lang === 'km' && (
+          <span className="font-khmer mt-0.5 text-sm leading-none text-muted">{khNum(score)}</span>
+        )}
+        <span className="mt-0.5 text-[11px] uppercase tracking-wide text-muted">{label}</span>
       </div>
     </div>
   );
@@ -256,8 +259,9 @@ function Mini({ label, value, icon, lang }: { label: string; value: number; icon
   return (
     <div className="glass-soft rounded-2xl px-2 py-3">
       <div className="text-base">{icon}</div>
-      <div className="text-lg font-extrabold text-moonglow">{num(value, lang)}</div>
-      <div className="text-[10px] uppercase tracking-wide text-muted">{label}</div>
+      <div className="text-lg font-extrabold leading-none text-moonglow">{value}</div>
+      {lang === 'km' && <div className="font-khmer text-[11px] leading-tight text-muted">{khNum(value)}</div>}
+      <div className="mt-0.5 text-[10px] uppercase tracking-wide text-muted">{label}</div>
     </div>
   );
 }
@@ -288,7 +292,10 @@ function CompatResult({
         <div className="mt-1 text-sm text-muted">
           {lang === 'km' ? compat.a.km : compat.a.en} · {lang === 'km' ? compat.b.km : compat.b.en}
         </div>
-        <div className="my-3 gradient-text text-[72px] font-extrabold leading-none">{num(compat.score, lang)}%</div>
+        <div className="mt-3 gradient-text text-[72px] font-extrabold leading-none">{compat.score}%</div>
+        {lang === 'km' && (
+          <div className="font-khmer mb-1 mt-1 text-base text-muted">({khNum(compat.score)}%)</div>
+        )}
         <p className={`text-base font-semibold text-ink ${lang === 'km' ? 'font-khmer' : ''}`}>{compat.verdict}</p>
         <div className="mt-6 space-y-2">
           <button onClick={onShare} className="btn-primary w-full">

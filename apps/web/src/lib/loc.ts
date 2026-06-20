@@ -14,12 +14,16 @@ export function khNum(v: number | string): string {
 }
 
 /**
- * Numerals for modern UI metrics (scores, %, stats, picker, Gregorian dates).
- * Cambodians use Arabic digits in everyday digital interfaces, so we keep these
- * Arabic in both languages; Khmer numerals are reserved for the almanac date.
+ * Numerals for modern UI metrics. Arabic in English; in Khmer we show Arabic
+ * with the traditional Khmer numeral beside it: e.g. "92 (៩២)".
  */
-export function num(v: number | string, _lang: Lang): string {
-  return String(v);
+export function num(v: number | string, lang: Lang): string {
+  return lang === 'km' ? `${v} (${khNum(v)})` : String(v);
+}
+
+/** Percentage variant: "92%" / "92% (៩២%)". */
+export function numPct(v: number | string, lang: Lang): string {
+  return lang === 'km' ? `${v}% (${khNum(v)}%)` : `${v}%`;
 }
 
 /** Long date from a YYYY-MM-DD string — Khmer weekday/month words, Arabic day/year. */
